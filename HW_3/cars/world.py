@@ -26,13 +26,20 @@ class World(metaclass=ABCMeta):
 
 
 class SimpleCarWorld(World):
-    COLLISION_PENALTY =  # выберите сами
-    HEADING_REWARD =  # выберите сами
-    WRONG_HEADING_PENALTY =  # выберите сами
-    IDLENESS_PENALTY =  # выберите сами
-    SPEEDING_PENALTY =  # выберите сами
-    MIN_SPEED =  # выберите сами
-    MAX_SPEED =  # выберите сами
+    # то насколько я наказываю игрока за попадание в стену
+    COLLISION_PENALTY = 1# выберите сами
+    # награда за правильный ХЭДИНГ
+    HEADING_REWARD =  1# выберите сами
+    # потеря за не правильный ХЭДИНГ
+    WRONG_HEADING_PENALTY =  1# выберите сами
+    # наказание, которое будет начисляться в случае если машинка медлит
+    IDLENESS_PENALTY =  1# выберите сами
+    # наказание, котрое будет начисляться в случае если машинка слишком скоросная
+    SPEEDING_PENALTY =  1# выберите сами
+    # та скорость ниже которой машинка начинает получать штраф за медлительность
+    MIN_SPEED =  0.5# выберите сами
+    # та скорость выше которой машинка начинает получать штраф за слишком большую скорость
+    MAX_SPEED =  1.5# выберите сами
 
     size = (800, 600)
 
@@ -104,13 +111,18 @@ class SimpleCarWorld(World):
         :param collision: произошло ли столкновение со стеной на прошлом шаге
         :return reward: награду агента (возможно, отрицательную)
         """
+        #? что это за а
         a = np.sin(angle(-state.position, state.heading))
         heading_reward = 1 if a > 0.1 else a if a > 0 else 0
         heading_penalty = a if a <= 0 else 0
+        # формируется наказание за то что машинка двигается недостаточно быстро
         idle_penalty = 0 if abs(state.velocity) > self.MIN_SPEED else -self.IDLENESS_PENALTY
+        # наказание за то, что машинка слишком быстрая
         speeding_penalty = 0 if abs(state.velocity) < self.MAX_SPEED else -self.SPEEDING_PENALTY * abs(state.velocity)
+        # вычисление величины наказания за сталкновение
         collision_penalty = - max(abs(state.velocity), 0.1) * int(collision) * self.COLLISION_PENALTY
 
+        # и так получаем какую награду получила машинка на этом ходу
         return heading_reward * self.HEADING_REWARD + heading_penalty * self.WRONG_HEADING_PENALTY + collision_penalty \
                + idle_penalty + speeding_penalty
 
