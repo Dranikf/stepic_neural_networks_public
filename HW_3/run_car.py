@@ -22,14 +22,17 @@ seed = args.seed if args.seed else 23
 np.random.seed(seed)
 random.seed(seed)
 m = generate_map(8, 5, 3, 3)
+agents_number = 1
 
 if args.filename:
     agent = SimpleCarAgent.from_file(args.filename)
-    w = SimpleCarWorld(1, m, SimplePhysics, SimpleCarAgent, timedelta=0.2)
+    # w = SimpleCarWorld(1 m, SimplePhysics, SimpleCarAgent, timedelta=0.2)
+    w = SimpleCarWorld(agents_number, m, SimplePhysics, SimpleCarAgent, timedelta=0.2)
+    
     if args.evaluate:
         print(w.evaluate_agent(agent, steps))
     else:
         w.set_agents([agent])
         w.run(steps)
 else:
-    SimpleCarWorld(1, m, SimplePhysics, SimpleCarAgent, timedelta=0.2).run(steps)
+    SimpleCarWorld(agents_number, m, SimplePhysics, SimpleCarAgent, timedelta=0.2).run(steps)
